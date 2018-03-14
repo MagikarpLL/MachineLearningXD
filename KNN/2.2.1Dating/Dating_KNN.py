@@ -83,4 +83,4 @@ def classifyPerson():
 
 
 # datingClassTest()
-classifyPerson()
+#classifyPerson()
