@@ -52,3 +52,30 @@ def buildStump(dataArr, classLabels, D):
                     bestStump['ineq'] = inequal
     return bestStump, minError, bestClassEst
 
+
+
+#基于单层决策树的AdaBoost训练过程
+def adaBoostTrainDS(dataArr, classLabels, numIt = 40):
+    weakClassArr = []
+    m = shape(dataArr)[0]
+    D = mat(ones((m,1))/m)
+    aggClassEst = mat(zeros((m,1)))
+    for i in range(numIt):
+        bestStump, error, classEst = buildStump(dataArr, classLabels, D)
+        print "D:", D.T
+        alpha = float(0.5 * log(1-error)/max(error,1e-16))
+        bestStump['alpha'] = alpha
+        weakClassArr.append(bestStump)
+        print "classEst:", classEst.T
+        #为下一次迭代计算D
+        expon = multiply(-1 * alpha * mat(classLabels).T, classEst)
+        D = multiply(D, exp(expon))
+        D = D/D.sum()
+        #错误率累加计算
+        aggClassEst += alpha * classEst
+        print "aggClassEst:", aggClassEst.T
+        aggErrors = multiply(sign(aggClassEst) != mat(classLabels), ones((m,1)))
+        errorsRate = aggErrors.sum()/m
+        print "total error:", errorsRate, "\n"
+        if errorsRate == 0.0:break
+    return weakClassArr
