@@ -40,6 +40,6 @@ def getDataFromFile(fileName):
        for line in f:
            nline = line.strip("\r\n")
            temp_list = [int(x) for x in nline.split(',')]
-           print temp_list
+           #print temp_list
            result.append(temp_list)
     return result
