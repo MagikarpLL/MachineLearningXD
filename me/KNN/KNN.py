@@ -44,8 +44,12 @@ def KNN_Test(trainFile, testFile):
 
 
 
+
+
+
+
 def mainFunction(trainFile, testFile):
     KNN_Test(trainFile,testFile)
     return
 
-mainFunction('train_500.txt','test_100.txt')
+mainFunction('train_1000.txt','test_1000.txt')
