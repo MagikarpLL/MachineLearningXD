@@ -38,10 +38,11 @@ def calcShannonEnt(dataSet, classLabels, D):
     return shannonEnt
 
 #按照给定特征划分数据集
-def splitDataSet(dataSet, axis, value, D):
+def splitDataSet(dataSet, classLabels , axis, value, D):
     retDataSet = []
     tempD = ((D.T).getA())[0]
     resultD = []
+    resultLabels = []
     for featVec in dataSet:
 
         #print 'for'
@@ -51,7 +52,8 @@ def splitDataSet(dataSet, axis, value, D):
             reduceFeatVec.extend(featVec[axis+1:])
             retDataSet.append(reduceFeatVec)
             resultD.append(tempD[dataSet.index(featVec)])
-    return retDataSet,mat(resultD).T
+            resultLabels.append(classLabels[dataSet.index(featVec)])
+    return retDataSet,mat(resultD).T, resultLabels
 
 #选择最好的数据集划分方式
 def chooseBestFeatureToSplit(dataSet,classLabels,D):
@@ -73,9 +75,9 @@ def chooseBestFeatureToSplit(dataSet,classLabels,D):
         uniqueVals = set(featList)
         newEntropy = 0.0
         for value in uniqueVals:
-            subDataSet, subD = splitDataSet(dataSet, i, value, D)
+            subDataSet, subD, subClassLabels = splitDataSet(dataSet,classLabels, i, value, D)
             prob = len(subDataSet)/float(len(dataSet))
-            newEntropy += prob * calcShannonEnt(subDataSet, classLabels, subD)
+            newEntropy += prob * calcShannonEnt(subDataSet, subClassLabels, subD)
         infoGain = baseEntropy - newEntropy
         if infoGain > bestInfoGain:
             bestInfoGain = infoGain
@@ -115,14 +117,14 @@ def createTree(trainData, classLabels ,featName, D):
 
         #startT2 = tm.time()
 
-        subDataSet, subD = splitDataSet(trainData,bestFeat,value, D)
+        subDataSet, subD, subClassLabels = splitDataSet(trainData,classLabels, bestFeat,value, D)
 
         #endT2 = tm.time()
         #print 'splitDataSet Time is:', (endT2 - startT2)
 
 
         myTree[bestFeatName][value] = createTree(
-            subDataSet ,classLabels,subFeat, subD
+            subDataSet ,subClassLabels,subFeat, subD
         )
     return myTree
 
@@ -140,7 +142,8 @@ def classify(inputTree, featLabels, testVec):
 
 
 def buildDecTree(trainData, classLabels, featName, D):
-    decTree = createTree(trainData, classLabels ,featName, D)
+    featNameLabels = featName[:]
+    decTree = createTree(trainData, classLabels ,featNameLabels, D)
     print 'train one dec tree successfully'
     classEst = []
     dataNum = len(trainData)
@@ -165,7 +168,7 @@ def adaBoostTrainDT(trainData, classLabels, featName, numIt=40):
         alpha = float(0.5 * log((1.0 - error) / max(error, 1e-16)))
         decTree['alpha'] = alpha
         weakClassArr.append(decTree)
-        print "classEst:", classEst.T
+        print "classEst:", classEst
         # 为下一次迭代计算D
         # 此处的multiply为对应元素相乘
         expon = multiply(-1 * alpha * mat(classLabels).T, classEst)
@@ -173,7 +176,7 @@ def adaBoostTrainDT(trainData, classLabels, featName, numIt=40):
         D = multiply(D, exp(expon))
         D = D / D.sum()
         # 错误率累加计算
-        aggClassEst += alpha * classEst
+        aggClassEst += alpha * mat(classEst).T
         print "aggClassEst: ", aggClassEst.T
         aggErrors = multiply(sign(aggClassEst) != mat(classLabels).T, ones((m, 1)))
         errorRate = aggErrors.sum() / m
@@ -216,7 +219,7 @@ def trainAda(dataFile,storeFileName):
 
 def mainFunc():
     #训练分类器
-    trainAda('test_2000.txt','ada_2000.txt')
+    trainAda('test_100.txt','ada_100.txt')
     #测试决策树准确率
     #testDecTree('test_500.txt','train_500_tree.txt')
 
