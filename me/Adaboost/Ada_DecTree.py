@@ -1,12 +1,13 @@
 # coding: utf-8
 import sys
 
+import time as tm
+
 sys.path.append(r"/home/magikarpll/me/workplace/pycharm/MachineLearningXD/me/tool/")
 import Data
 from numpy import *
 import operator
 from math import log
-import treePlotter
 import pickle
 
 #多数投票决定该节点类型
@@ -20,58 +21,110 @@ def majorityCnt(classList):
     return sortedClassCount[0][0]
 
 # 计算数据集的香农熵
-def calcShannonEnt(dataSet, classLabels):
+def calcShannonEnt(dataSet, classLabels, D):
     numEntries = len(dataSet)
-    labelCounts = {}
-    for i in range(numEntries):
-        currentLabel = classLabels[i]
-        if currentLabel not in labelCounts.keys():
-            labelCounts[currentLabel] = 0
-        labelCounts[currentLabel] += 1
+    labelCounts = set(classLabels)
     shannonEnt = 0.0
-    for key in labelCounts:
-        prob = float(labelCounts[key]) / numEntries
-        shannonEnt -= prob * log(prob, 2)
+    for item in labelCounts:
+        errArr = ones(numEntries)
+        for i in range(numEntries):
+            if classLabels[i] != item:
+                errArr[i] = 0
+        errArr = mat(errArr)
+        prob = errArr * D
+        prob = (prob.getA())[0][0]
+        if(prob != 0.0):
+            shannonEnt -= prob * log(prob, 2)
     return shannonEnt
 
 #按照给定特征划分数据集
-def splitDataSet(dataSet, axis, value):
+def splitDataSet(dataSet, axis, value, D):
     retDataSet = []
+    tempD = ((D.T).getA())[0]
+    resultD = []
     for featVec in dataSet:
+
+        #print 'for'
+
         if(featVec[axis] == value):
             reduceFeatVec = featVec[:axis]
             reduceFeatVec.extend(featVec[axis+1:])
             retDataSet.append(reduceFeatVec)
-    return retDataSet
+            resultD.append(tempD[dataSet.index(featVec)])
+    return retDataSet,mat(resultD).T
 
 #选择最好的数据集划分方式
 def chooseBestFeatureToSplit(dataSet,classLabels,D):
     numFeatures = len(dataSet[0])
-    baseEntropy = calcShannonEnt(dataSet, classLabels)
+
+
+
+    baseEntropy = calcShannonEnt(dataSet, classLabels, D)
+
+
+
     bestInfoGain = 0.0
     bestFeature = -1
+
+    startT = tm.time()
+
     for i in range(numFeatures):
         featList = [example[i] for example in dataSet]
         uniqueVals = set(featList)
         newEntropy = 0.0
         for value in uniqueVals:
-            subDataSet = splitDataSet(dataSet, i, value)
+            subDataSet, subD = splitDataSet(dataSet, i, value, D)
+            prob = len(subDataSet)/float(len(dataSet))
+            newEntropy += prob * calcShannonEnt(subDataSet, classLabels, subD)
+        infoGain = baseEntropy - newEntropy
+        if infoGain > bestInfoGain:
+            bestInfoGain = infoGain
+            bestFeature = i
 
-
+    endT = tm.time()
+    print "for Time:",(endT - startT)
 
     return bestFeature
 
 def createTree(trainData, classLabels ,featName, D):
+
+    print 'createTree'
+
     #当类别完全相同时，停止继续划分
-    if(classLabels.count(classLabels[0]) == len(classLabels)):
+    tempSet = set(classLabels)
+    if(len(tempSet) == 1):
         return classLabels[0]
     #遍历完所有时，若分类还未结束，则返回出现次数最多的作为该节点类型
-    if len(trainData[0]) == 0:
+    if len(trainData) == 1:
         return majorityCnt(classLabels)
+
+    #startT = tm.time()
+
     bestFeat = chooseBestFeatureToSplit(trainData,classLabels, D)
 
+    #endT = tm.time()
+    #print 'chooseBestFeatureToSplit Time is:',(endT-startT)
 
-    return decTree
+    bestFeatName = featName[bestFeat]
+    myTree = {bestFeatName:{}}
+    del(featName[bestFeat])
+    featValues = [example[bestFeat] for example in trainData]
+    uniqueVals = set(featValues)
+    for value in uniqueVals:
+        subFeat = featName[:]
+
+        #startT2 = tm.time()
+
+        subDataSet, subD = splitDataSet(trainData,bestFeat,value, D)
+
+        #endT2 = tm.time()
+        #print 'splitDataSet Time is:', (endT2 - startT2)
+
+
+        myTree[bestFeatName][value] = createTree(
+            subDataSet ,classLabels,subFeat, subD
+        )
+    return myTree
 
 def classify(inputTree, featLabels, testVec):
     firstStr = inputTree.keys()[0]
@@ -88,6 +141,7 @@ def classify(inputTree, featLabels, testVec):
 
 def buildDecTree(trainData, classLabels, featName, D):
     decTree = createTree(trainData, classLabels ,featName, D)
+    print 'train one dec tree successfully'
     classEst = []
     dataNum = len(trainData)
     errorNum = 0
@@ -126,3 +180,46 @@ def adaBoostTrainDT(trainData, classLabels, featName, numIt=40):
         print "total error: ", errorRate, "\n"
         if errorRate <= 0.13: break
     return weakClassArr
+
+def getDataAndLabel(fileName):
+    data = Data.getDataFromFile(fileName)
+    ndata = array(data)
+    labels = (ndata[:,30:]).T
+    result = ndata[:,:30]
+    return result.tolist(),labels[0]
+
+def getData(fileName):
+    data = Data.getDataFromFile(fileName)
+    return data
+
+def getFeatureName():
+    featName = ['having_IP_Address','URL_Length','Shortining_Service','having_At_Symbol','double_slash_redirecting','Prefix_Suffix','having_Sub_Domain','SSLfinal_State','Domain_registeration_length','Favicon','port',
+                'HTTPS_token','Request_URL','URL_of_Anchor','Links_in_tags','SFH','Submitting_to_email','Abnormal_URL','Redirect','on_mouseover','RightClick','popUpWidnow',
+                'Iframe','age_of_domain','DNSRecord','web_traffic','Page_Rank','Google_Index','Links_pointing_to_page','Statistical_report','Result',]
+    return featName
+
+def storeTree(inputTree, fileName):
+    fw = open(fileName,'w')
+    pickle.dump(inputTree,fw)
+    fw.close()
+
+def grabTree(filename):
+    fr = open(filename)
+    return pickle.load(fr)
+
+def trainAda(dataFile,storeFileName):
+    testData, testLabel = getDataAndLabel(dataFile)
+    featName = getFeatureName()
+    weakClassArr = adaBoostTrainDT(testData, testLabel, featName,20)
+    storeTree(weakClassArr, storeFileName)
+    return 0
+
+def mainFunc():
+    #训练分类器
+    trainAda('test_2000.txt','ada_2000.txt')
+    #测试决策树准确率
+    #testDecTree('test_500.txt','train_500_tree.txt')
+
+    return 0
+
+mainFunc()
