@@ -14,13 +14,11 @@
 2.3 网络钓鱼检测技术
 2.4 本章小结
 第三章基于机器学习的钓鱼网站检测系统的研究 8500
-3.1 引言
-3.2 常见钓鱼网站检测技术的对比
-3.3 算法流程
-3.4 数据预处理
-3.5 特征提取
-3.6 分类器训练与处理
-3.7 本章小结
+3.1 算法流程
+3.2 数据预处理
+3.3 特征提取
+3.4 分类器训练与处理
+3.5 本章小结
 第四章常见分类器模型的研究与比较 12500
 KNN
 决策树
@@ -67,6 +65,21 @@ test train
 [6] https://www.webcitation.org/5w9Z2iACi?url=http://www.fraudwatchinternational.com/phishing-fraud/phishing-web-site-methods/
 [7] http://tetraph.com/covert_redirect/       Covert Redirect. Tetraph. 1 May 2014 [10 November 2014].
 [8] https://www.yahoo.com/news/facebook-google-users-threatened-security-192547549.html       Facebook, Google Users Threatened by New Security Flaw. Yahoo. 2 May 2014 [10 November 2014].
+[9] http://www.apac.cn/
+[10] https://www.phishtank.com/
+[11] Sujata G arera, N iels Provos, M onica C hew , et al. A Fram ew ork for
+D etection and M easurem ent of Phishing A ttacks [A ]. In: C hristopher
+Kruegel, ed [C ]. Proc. of the W O R M ’07. U SA: AC M Press, 2007, 1-8.
+[12] 网络钓鱼防御技术研究_黄华军
+[13]
+J.  Ma,  S.  L.  K.,  S.  Stefan,  and  V.  G.  M.,  “Beyond  blacklists:  learning  to  detect  malicious  web 
+sites from suspicious urls,” in Proceedings of the 15
+th
+ international conference on Knowledge 
+discovery and data mining, 2009, pp. 1245-1254. 
+
+[14]
+
 
  
 
