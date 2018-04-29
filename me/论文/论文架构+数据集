@@ -13,23 +13,29 @@
 2.2 网络钓鱼攻击技术
 2.3 网络钓鱼检测技术
 2.4 本章小结
-第三章基于机器学习的钓鱼网站检测系统的研究 8500
+第三章基于机器学习的钓鱼网站检测系统的研究 8500(12000)
 3.1 算法流程
 3.2 数据预处理
 3.3 特征提取
 3.4 分类器训练与处理
 3.5 本章小结
+
 第四章常见分类器模型的研究与比较 12500
 KNN
+
 决策树
 logRegres
+
 4.2 随机森林(决策树）
+
 4.3 Real Adaboost（CART）
+
 4.5 分类器检测性能比较
    4.5.1检测指标选取
    4.5.2钓鱼网站数据集选取
    4.5.3结果比较
 4.6 本章小结
+
 第五章XX算法的改进 14000
 5.1 从XX方向改进
 5.2 从XX方向改进
@@ -78,7 +84,8 @@ th
  international conference on Knowledge 
 discovery and data mining, 2009, pp. 1245-1254. 
 
-[14]
+[14]  S. Kotsiantis, D. Kanellopoulos, P. Pintelas, "Data Preprocessing for Supervised Learning", International Journal of Computer Science, 2006, Vol 1 N. 2, pp 111–117.
+
 
 
  
