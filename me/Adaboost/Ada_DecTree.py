@@ -1,14 +1,15 @@
 # coding: utf-8
 import sys
 
-import time as tm
-
-sys.path.append(r"/home/magikarpll/me/workplace/pycharm/MachineLearningXD/me/tool/")
+sys.path.append(r"I:\Workplace\WorkPlace\PyCharm\MachineLearningXD\me\tool")
 import Data
 from numpy import *
 import operator
 from math import log
 import pickle
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import make_gaussian_quantiles
 
 #多数投票决定该节点类型
 def majorityCnt(classList):
@@ -189,7 +190,7 @@ def getDataAndLabel(fileName):
     ndata = array(data)
     labels = (ndata[:,30:]).T
     result = ndata[:,:30]
-    return result.tolist(),labels[0]
+    return result,labels[0]
 
 def getData(fileName):
     data = Data.getDataFromFile(fileName)
@@ -210,16 +211,35 @@ def grabTree(filename):
     fr = open(filename)
     return pickle.load(fr)
 
-def trainAda(dataFile,storeFileName):
-    testData, testLabel = getDataAndLabel(dataFile)
-    featName = getFeatureName()
-    weakClassArr = adaBoostTrainDT(testData, testLabel, featName,20)
-    storeTree(weakClassArr, storeFileName)
+def adaBoostApi(X, y):
+    bdt = AdaBoostClassifier(DecisionTreeClassifier(max_depth=2, min_samples_split=20, min_samples_leaf=5),
+                             algorithm="SAMME",
+                             n_estimators=200, learning_rate=0.8)
+    bdt.fit(X, y)
+    return bdt
+
+def trainAda(dataFile,testFile):
+    trainData, trainLabel = getDataAndLabel(dataFile)
+    testData, testLabel = getDataAndLabel(testFile)
+
+    bdt = adaBoostApi(trainData, trainLabel)
+
+    result =  bdt.predict(testData)
+
+    errorNum = 0
+    for i in range(len(testLabel)):
+        if testLabel[i] != result[i]:
+            errorNum += 1
+
+    print errorNum/float(len(testLabel))
+
+    #weakClassArr = adaBoostTrainDT(testData, testLabel, featName,20)
+    #storeTree(weakClassArr, storeFileName)
     return 0
 
 def mainFunc():
     #训练分类器
-    trainAda('test_100.txt','ada_100.txt')
+    trainAda('test_500.txt','test_2000.txt')
     #测试决策树准确率
     #testDecTree('test_500.txt','train_500_tree.txt')
 

@@ -3,7 +3,7 @@ import random
 
 
 def selectSomeDataFromFile(fileName, numberOfData):
-    path = '/home/magikarpll/me/workplace/pycharm/MachineLearningXD/me/data/old/'
+    path = 'I:/Workplace/WorkPlace/PyCharm/MachineLearningXD/me/data/old/'
     currPath = path + fileName
     with open(currPath,'r') as f:
         data = f.readlines()
@@ -11,7 +11,7 @@ def selectSomeDataFromFile(fileName, numberOfData):
     return result
 
 def selectAndDeleteSomeDataFromFile(fileName, numberOfData):
-    path = '/home/magikarpll/me/workplace/pycharm/MachineLearningXD/me/data/old/'
+    path = 'I:/Workplace/WorkPlace/PyCharm/MachineLearningXD/me/data/old/'
     currPath = path + fileName
     with open(currPath,'r') as f:
         data = f.readlines()
@@ -25,7 +25,7 @@ def selectAndDeleteSomeDataFromFile(fileName, numberOfData):
 
 
 def saveDataToFile(fileName,data):
-    path = '/home/magikarpll/me/workplace/pycharm/MachineLearningXD/me/data/current/'
+    path = 'I:/Workplace/WorkPlace/PyCharm/MachineLearningXD/me/data/current/'
     currPath = path + fileName
     with open(currPath,'w') as f:
         for lines in data:
@@ -33,7 +33,7 @@ def saveDataToFile(fileName,data):
 
 
 def getDataFromFile(fileName):
-    path = '/home/magikarpll/me/workplace/pycharm/MachineLearningXD/me/data/current/'
+    path = 'I:/Workplace/WorkPlace/PyCharm/MachineLearningXD/me/data/current/'
     currPath = path + fileName
     result = []
     with open(currPath,'r') as f:
