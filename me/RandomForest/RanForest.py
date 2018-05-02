@@ -10,10 +10,12 @@ from math import sqrt
 import pickle
 import time
 
-#get data
+
+# get data
 def getData(fileName):
     data = Data.getDataFromFile(fileName)
     return data
+
 
 # Split a dataset into k folds
 def cross_validation_split(dataset, n_folds):
@@ -40,7 +42,7 @@ def accuracy_metric(actual, predicted):
 
 # Evaluate an algorithm using a cross validation split
 def evaluate_algorithm(dataset, algorithm, n_folds, *args):
-    trees = algorithm(dataset,*args)
+    trees = algorithm(dataset, *args)
     return trees
 
     '''
@@ -83,8 +85,8 @@ def gini_index(groups, classes):
             size = len(group)
             if size == 0:
                 continue
-            propotion = [row[-1] for row in group].count(class_value)/float(size)
-            gini += float(size)/D * (propotion * (1- propotion))
+            propotion = [row[-1] for row in group].count(class_value) / float(size)
+            gini += float(size) / D * (propotion * (1 - propotion))
     return gini
 
     '''
@@ -204,20 +206,23 @@ def random_forest(train, max_depth, min_size, sample_size, n_trees, n_features):
         trees.append(tree)
         print '第' + str(i) + '颗完成'
 
-    #predictions = [bagging_predict(trees, row) for row in test]
-    #return (predictions), trees
+    # predictions = [bagging_predict(trees, row) for row in test]
+    # return (predictions), trees
     return trees
 
+
 def storeTree(inputTree, fileName):
-    fw = open(fileName,'w')
-    pickle.dump(inputTree,fw)
+    fw = open(fileName, 'w')
+    pickle.dump(inputTree, fw)
     fw.close()
+
 
 def grabTree(filename):
     fr = open(filename)
     return pickle.load(fr)
 
-def trainForest(trainFile, storeFile,max_depth, n_trees):
+
+def trainForest(trainFile, storeFile, max_depth, n_trees):
     # Test the random forest algorithm
     seed(2)
     # load and prepare data
@@ -237,25 +242,39 @@ def trainForest(trainFile, storeFile,max_depth, n_trees):
     time_end = time.time()
     print time_end - time_start
 
-
     print 'depth_' + str(max_depth) + '_num_' + str(n_trees) + '_complete'
     storeTree(trees, storeFile)
+
 
 def testForest(treeFile, testFile):
     trees = grabTree(treeFile)
     dataSet = getData(testFile)
     classLabels = [row[-1] for row in dataSet]
+
+    allNum = len(dataSet)
+    errorNum = 0
+    fnNum = 0
+    tpNum = 0
+
     for i in range(len(dataSet)):
         dataSet[i][-1] = None
     predictions = [bagging_predict(trees, row) for row in dataSet]
-    accuracy = accuracy_metric(classLabels, predictions)
-    print accuracy
+
+    for i in range(allNum):
+        if (classLabels[i] != predictions[i]):
+            errorNum += 1
+            if (classLabels[i] == -1):
+                fnNum += 1
+        else:
+            if (classLabels[i] == -1):
+                tpNum += 1
+
+    print treeFile + '||||' + '错误率: %f, 误判率: %f' % (float(errorNum) / allNum, fnNum / float(fnNum + tpNum))
 
 
 
 def trainAllFun(depth):
-
-    if(depth != 3):
+    if (depth != 3):
         trainForest('train_3000_1.txt', 'forest_10_3000_1.txt', depth, 10)
         trainForest('train_3000_2.txt', 'forest_10_3000_2.txt', depth, 10)
         trainForest('train_3000_3.txt', 'forest_10_3000_3.txt', depth, 10)
@@ -271,29 +290,51 @@ def trainAllFun(depth):
     trainForest('train_3000_3.txt', 'forest_60_3000_3.txt', depth, 60)
     trainForest('train_3000_4.txt', 'forest_60_3000_4.txt', depth, 60)
 
-    trainForest('train_3000_1.txt', 'forest_120_3000_1.txt', depth, 120)
-    trainForest('train_3000_2.txt', 'forest_120_3000_2.txt', depth, 120)
-    trainForest('train_3000_3.txt', 'forest_120_3000_3.txt', depth, 120)
-    trainForest('train_3000_4.txt', 'forest_120_3000_4.txt', depth, 120)
+    #trainForest('train_3000_1.txt', 'forest_120_3000_1.txt', depth, 120)
+    #trainForest('train_3000_2.txt', 'forest_120_3000_2.txt', depth, 120)
+    #trainForest('train_3000_3.txt', 'forest_120_3000_3.txt', depth, 120)
+    #trainForest('train_3000_4.txt', 'forest_120_3000_4.txt', depth, 120)
     return
 
+def testAllFuc(depth):
+    testForest(str(depth) + '/forest_10_3000_1.txt', 'test_3000_1.txt')
+    testForest(str(depth) + '/forest_10_3000_2.txt', 'test_3000_2.txt')
+    testForest(str(depth) + '/forest_10_3000_3.txt', 'test_3000_3.txt')
+    testForest(str(depth) + '/forest_10_3000_4.txt', 'test_3000_4.txt')
+
+    testForest(str(depth) + '/forest_30_3000_1.txt', 'test_3000_1.txt')
+    testForest(str(depth) + '/forest_30_3000_2.txt', 'test_3000_2.txt')
+    testForest(str(depth) + '/forest_30_3000_3.txt', 'test_3000_3.txt')
+    testForest(str(depth) + '/forest_30_3000_4.txt', 'test_3000_4.txt')
+
+    testForest(str(depth) + '/forest_60_3000_1.txt', 'test_3000_1.txt')
+    testForest(str(depth) + '/forest_60_3000_2.txt', 'test_3000_2.txt')
+    testForest(str(depth) + '/forest_60_3000_3.txt', 'test_3000_3.txt')
+    testForest(str(depth) + '/forest_60_3000_4.txt', 'test_3000_4.txt')
+
+    #testForest(str(depth) + '/forest_120_3000_1.txt', 'test_3000_1.txt')
+    #testForest(str(depth) + '/forest_120_3000_2.txt', 'test_3000_2.txt')
+    #testForest(str(depth) + '/forest_120_3000_3.txt', 'test_3000_3.txt')
+    #testForest(str(depth) + '/forest_120_3000_4.txt', 'test_3000_4.txt')
+    return
 
 def RandomForestMain():
     # trainAdaCart('train_500_1.txt', 'test.txts' , 3, 10)
-    #accuracy = testForest('3/forest_10_3000_1.txt', 'test_3000_4.txt')
 
-    trainAllFun(3)
-    trainAllFun(5)
+    #testAllFuc(6)
+    #testAllFuc(8)
+
+    #trainAllFun(6)
     #trainAllFun(8)
-    #trainAllFun(10)
+    trainAllFun(10)
+    # trainAllFun(10)
     return
 
 
-
-
 def mainFuc(trainFile, storeFile, treeFile, testFile):
-    #trainForest(trainFile, storeFile)
+    # trainForest(trainFile, storeFile)
     testForest(treeFile, testFile)
 
-#mainFuc('train_500.txt','forest_500.txt', 'forest_500.txt','test_500.txt')
+
+# mainFuc('train_500.txt','forest_500.txt', 'forest_500.txt','test_500.txt')
 RandomForestMain()
