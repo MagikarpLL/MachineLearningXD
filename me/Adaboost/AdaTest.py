@@ -7,9 +7,6 @@ from numpy import *
 import operator
 from math import log
 import pickle
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.datasets import make_gaussian_quantiles
 
 #多数投票决定该节点类型
 def majorityCnt(classList):
@@ -22,20 +19,22 @@ def majorityCnt(classList):
     return sortedClassCount[0][0]
 
 # 计算数据集的香农熵
-def calcShannonEnt(dataSet, classLabels, D):
+def calcShannonEnt(dataSet, classLabels, subD):
     numEntries = len(dataSet)
     labelCounts = set(classLabels)
     shannonEnt = 0.0
     for item in labelCounts:
-        errArr = ones(numEntries)
+        numItem = ones(numEntries)
         for i in range(numEntries):
             if classLabels[i] != item:
-                errArr[i] = 0
-        errArr = mat(errArr)
-        prob = errArr * D
-        prob = (prob.getA())[0][0]
+                numItem[i] = 0
+        weights = mat(numItem)
+        weights = weights * subD
+        weight = (weights.getA())[0][0]
+        numTemp = numItem.tolist().count(1)
+        prob = numTemp/float(numEntries)
         if(prob != 0.0):
-            shannonEnt -= prob * log(prob, 2)
+            shannonEnt -= prob * weight *log(prob, 2)
     return shannonEnt
 
 #按照给定特征划分数据集
@@ -45,9 +44,6 @@ def splitDataSet(dataSet, classLabels , axis, value, D):
     resultD = []
     resultLabels = []
     for featVec in dataSet:
-
-        #print 'for'
-
         if(featVec[axis] == value):
             reduceFeatVec = featVec[:axis]
             reduceFeatVec.extend(featVec[axis+1:])
@@ -76,7 +72,7 @@ def chooseBestFeatureToSplit(dataSet,classLabels,D):
             bestFeature = i
     return bestFeature
 
-def createTree(trainData, classLabels ,featName, D):
+def createTree(trainData, classLabels ,featName, depth ,D):
 
     print 'createTree'
 
@@ -86,6 +82,8 @@ def createTree(trainData, classLabels ,featName, D):
         return classLabels[0]
     #遍历完所有时，若分类还未结束，则返回出现次数最多的作为该节点类型
     if len(trainData) == 1:
+        return majorityCnt(classLabels)
+    if depth == 0:
         return majorityCnt(classLabels)
 
     #startT = tm.time()
@@ -112,12 +110,16 @@ def createTree(trainData, classLabels ,featName, D):
 
 
         myTree[bestFeatName][value] = createTree(
-            subDataSet ,subClassLabels,subFeat, subD
+            subDataSet ,subClassLabels,subFeat, depth - 1 ,subD
         )
     return myTree
 
 def classify(inputTree, featLabels, testVec):
-    firstStr = inputTree.keys()[0]
+
+    keyList = inputTree.keys()
+    if len(keyList)>= 2:
+        keyList.remove('alpha')
+    firstStr = keyList[0]
     secondDict = inputTree[firstStr]
     featIndex = featLabels.index(firstStr)
     for key in secondDict.keys():
@@ -129,9 +131,9 @@ def classify(inputTree, featLabels, testVec):
     return classLabel
 
 
-def buildDecTree(trainData, classLabels, featName, D):
+def buildDecTree(trainData, classLabels, featName, depth , D):
     featNameLabels = featName[:]
-    decTree = createTree(trainData, classLabels ,featNameLabels, D)
+    decTree = createTree(trainData, classLabels ,featNameLabels, depth ,D)
     print 'train one dec tree successfully'
     classEst = []
     dataNum = len(trainData)
@@ -145,17 +147,18 @@ def buildDecTree(trainData, classLabels, featName, D):
     return decTree, error, classEst
 
 
-def adaBoostTrainDT(trainData, classLabels, featName, numIt=40):
+def adaBoostTrainDT(trainData, classLabels, featName,depth, numIt=40):
     weakClassArr = []
     m = shape(trainData)[0]
     D = mat(ones((m, 1)) / m)
     aggClassEst = mat(zeros((m, 1)))
     for i in range(numIt):
-        decTree, error, classEst = buildDecTree(trainData, classLabels, featName, D)
+        decTree, error, classEst = buildDecTree(trainData, classLabels, featName, depth ,D)
         print "D:", D.T
         alpha = float(0.5 * log((1.0 - error) / max(error, 1e-16)))
         decTree['alpha'] = alpha
         weakClassArr.append(decTree)
+        print i
         print "classEst:", classEst
         # 为下一次迭代计算D
         # 此处的multiply为对应元素相乘
@@ -169,7 +172,7 @@ def adaBoostTrainDT(trainData, classLabels, featName, numIt=40):
         aggErrors = multiply(sign(aggClassEst) != mat(classLabels).T, ones((m, 1)))
         errorRate = aggErrors.sum() / m
         print "total error: ", errorRate, "\n"
-        if errorRate <= 0.13: break
+        #if errorRate <= 0.13: break
     return weakClassArr
 
 def getDataAndLabel(fileName):
@@ -177,7 +180,7 @@ def getDataAndLabel(fileName):
     ndata = array(data)
     labels = (ndata[:,30:]).T
     result = ndata[:,:30]
-    return result,labels[0]
+    return result.tolist(),labels[0].tolist()
 
 def getData(fileName):
     data = Data.getDataFromFile(fileName)
@@ -198,37 +201,38 @@ def grabTree(filename):
     fr = open(filename)
     return pickle.load(fr)
 
-def adaBoostApi(X, y):
-    bdt = AdaBoostClassifier(DecisionTreeClassifier(max_depth=2, min_samples_split=20, min_samples_leaf=5),
-                             algorithm="SAMME",
-                             n_estimators=200, learning_rate=0.8)
-    bdt.fit(X, y)
-    return bdt
-
-def trainAda(dataFile,testFile):
+def trainAda(dataFile,storeFile, depth, num):
     trainData, trainLabel = getDataAndLabel(dataFile)
-    testData, testLabel = getDataAndLabel(testFile)
-
-    bdt = adaBoostApi(trainData, trainLabel)
-
-    result =  bdt.predict(testData)
-
-    errorNum = 0
-    for i in range(len(testLabel)):
-        if testLabel[i] != result[i]:
-            errorNum += 1
-
-    print errorNum/float(len(testLabel))
-
-    #weakClassArr = adaBoostTrainDT(testData, testLabel, featName,20)
-    #storeTree(weakClassArr, storeFileName)
+    featName = getFeatureName()
+    weakClassArr = adaBoostTrainDT(trainData, trainLabel, featName, depth ,num)
+    storeTree(weakClassArr, storeFile)
     return 0
+
+def classifySelf(inputTree, featLabels, testVec):
+    value = 0.0
+    for i in range(len(inputTree)):
+            value = value + inputTree[i].get('alpha') * classify(inputTree[i], featLabels, testVec)
+    if value >= 0:
+        return 1
+    else:
+        return -1
+
+def testAda(storeFile, testFile):
+    tree = grabTree(storeFile)
+    testData, testLabel = getDataAndLabel(testFile)
+    featName = getFeatureName()
+    errorNum = 0
+    for i in range(len(testData)):
+        classRet = classifySelf(tree, featName, testData[i])
+        if classRet != testLabel[i]:
+            errorNum += 1
+    print errorNum/float(len(testData))
 
 def mainFunc():
     #训练分类器
-    trainAda('test_500.txt','test_2000.txt')
+    #trainAda('train_1000.txt','ada_test_1000.txt', 4, 80)
     #测试决策树准确率
-    #testDecTree('test_500.txt','train_500_tree.txt')
+    testAda('ada_test_1000.txt','test_2000.txt')
 
     return 0
 
