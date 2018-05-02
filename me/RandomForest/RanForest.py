@@ -8,6 +8,7 @@ from random import seed
 from random import randrange
 from math import sqrt
 import pickle
+import time
 
 #get data
 def getData(fileName):
@@ -23,7 +24,7 @@ def cross_validation_split(dataset, n_folds):
         fold = list()
         while len(fold) < fold_size:
             index = randrange(len(dataset_copy))
-            fold.append(dataset_copy.pop(index))
+            fold.append(dataset_copy[index])
         dataset_split.append(fold)
     return dataset_split
 
@@ -39,6 +40,10 @@ def accuracy_metric(actual, predicted):
 
 # Evaluate an algorithm using a cross validation split
 def evaluate_algorithm(dataset, algorithm, n_folds, *args):
+    trees = algorithm(dataset,*args)
+    return trees
+
+    '''
     folds = cross_validation_split(dataset, n_folds)
     scores = list()
     for fold in folds:
@@ -55,6 +60,7 @@ def evaluate_algorithm(dataset, algorithm, n_folds, *args):
         accuracy = accuracy_metric(actual, predicted)
         scores.append(accuracy)
     return scores, trees
+    '''
 
 
 # Split a dataset based on an attribute and an attribute value
@@ -70,6 +76,18 @@ def test_split(index, value, dataset):
 
 # Calculate the Gini index for a split dataset
 def gini_index(groups, classes):
+    gini = 0.0
+    D = len(groups[0]) + len(groups[1])
+    for class_value in classes:
+        for group in groups:
+            size = len(group)
+            if size == 0:
+                continue
+            propotion = [row[-1] for row in group].count(class_value)/float(size)
+            gini += float(size)/D * (propotion * (1- propotion))
+    return gini
+
+    '''
     # count all samples at split point
     n_instances = float(sum([len(group) for group in groups]))
     # sum weighted Gini index for each group
@@ -87,6 +105,7 @@ def gini_index(groups, classes):
         # weight the group score by its relative size
         gini += (1.0 - score) * (size / n_instances)
     return gini
+    '''
 
 
 # Select the best split point for a dataset
@@ -177,14 +196,17 @@ def bagging_predict(trees, row):
 
 
 # Random Forest Algorithm
-def random_forest(train, test, max_depth, min_size, sample_size, n_trees, n_features):
+def random_forest(train, max_depth, min_size, sample_size, n_trees, n_features):
     trees = list()
     for i in range(n_trees):
         sample = subsample(train, sample_size)
         tree = build_tree(sample, max_depth, min_size, n_features)
         trees.append(tree)
-    predictions = [bagging_predict(trees, row) for row in test]
-    return (predictions), trees
+        print '第' + str(i) + '颗完成'
+
+    #predictions = [bagging_predict(trees, row) for row in test]
+    #return (predictions), trees
+    return trees
 
 def storeTree(inputTree, fileName):
     fw = open(fileName,'w')
@@ -195,26 +217,29 @@ def grabTree(filename):
     fr = open(filename)
     return pickle.load(fr)
 
-def trainForest(trainFile, storeFile):
+def trainForest(trainFile, storeFile,max_depth, n_trees):
     # Test the random forest algorithm
     seed(2)
     # load and prepare data
     dataset = getData(trainFile)
     # evaluate algorithm
     n_folds = 5
-    max_depth = 10
     min_size = 1
-    sample_size = 1.0
+    sample_size = 0.5
     n_features = int(sqrt(len(dataset[0]) - 1))
-    finalTrees = []
-    for n_trees in [1, 5, 10]:
-        scores, trees = evaluate_algorithm(dataset, random_forest, n_folds, max_depth, min_size, sample_size, n_trees, n_features)
-        if(n_trees == 10):
-            finalTrees = trees
-        print('Trees: %d' % n_trees)
-        print('Scores: %s' % scores)
-        print('Mean Accuracy: %.3f%%' % (sum(scores) / float(len(scores))))
-    storeTree(finalTrees, storeFile)
+
+    storeFile = str(max_depth) + '/' + storeFile
+
+    time_start = time.time()
+
+    trees = evaluate_algorithm(dataset, random_forest, n_folds, max_depth, min_size, sample_size, n_trees, n_features)
+
+    time_end = time.time()
+    print time_end - time_start
+
+
+    print 'depth_' + str(max_depth) + '_num_' + str(n_trees) + '_complete'
+    storeTree(trees, storeFile)
 
 def testForest(treeFile, testFile):
     trees = grabTree(treeFile)
@@ -226,8 +251,49 @@ def testForest(treeFile, testFile):
     accuracy = accuracy_metric(classLabels, predictions)
     print accuracy
 
+
+
+def trainAllFun(depth):
+
+    if(depth != 3):
+        trainForest('train_3000_1.txt', 'forest_10_3000_1.txt', depth, 10)
+        trainForest('train_3000_2.txt', 'forest_10_3000_2.txt', depth, 10)
+        trainForest('train_3000_3.txt', 'forest_10_3000_3.txt', depth, 10)
+        trainForest('train_3000_4.txt', 'forest_10_3000_4.txt', depth, 10)
+
+    trainForest('train_3000_1.txt', 'forest_30_3000_1.txt', depth, 30)
+    trainForest('train_3000_2.txt', 'forest_30_3000_2.txt', depth, 30)
+    trainForest('train_3000_3.txt', 'forest_30_3000_3.txt', depth, 30)
+    trainForest('train_3000_4.txt', 'forest_30_3000_4.txt', depth, 30)
+
+    trainForest('train_3000_1.txt', 'forest_60_3000_1.txt', depth, 60)
+    trainForest('train_3000_2.txt', 'forest_60_3000_2.txt', depth, 60)
+    trainForest('train_3000_3.txt', 'forest_60_3000_3.txt', depth, 60)
+    trainForest('train_3000_4.txt', 'forest_60_3000_4.txt', depth, 60)
+
+    trainForest('train_3000_1.txt', 'forest_120_3000_1.txt', depth, 120)
+    trainForest('train_3000_2.txt', 'forest_120_3000_2.txt', depth, 120)
+    trainForest('train_3000_3.txt', 'forest_120_3000_3.txt', depth, 120)
+    trainForest('train_3000_4.txt', 'forest_120_3000_4.txt', depth, 120)
+    return
+
+
+def RandomForestMain():
+    # trainAdaCart('train_500_1.txt', 'test.txts' , 3, 10)
+    #accuracy = testForest('3/forest_10_3000_1.txt', 'test_3000_4.txt')
+
+    trainAllFun(3)
+    trainAllFun(5)
+    #trainAllFun(8)
+    #trainAllFun(10)
+    return
+
+
+
+
 def mainFuc(trainFile, storeFile, treeFile, testFile):
     #trainForest(trainFile, storeFile)
     testForest(treeFile, testFile)
 
-mainFuc('train_500.txt','forest_500.txt', 'forest_500.txt','test_500.txt')
+#mainFuc('train_500.txt','forest_500.txt', 'forest_500.txt','test_500.txt')
+RandomForestMain()

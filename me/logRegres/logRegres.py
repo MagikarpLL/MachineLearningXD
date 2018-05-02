@@ -22,7 +22,7 @@ def loadDataSet(filename):
             temp = float(lineArr[i])
             tempList.append(temp)
         dataMat.append(tempList)
-        if(int(lineArr[30]) == 1):
+        if (int(lineArr[30]) == 1):
             labelMat.append(1)
         else:
             labelMat.append(0)
@@ -51,7 +51,7 @@ def gradAscent(dataMatIn, classLabels):
 # 画出数据集和Logistic回归最佳拟合直线的函数
 def plotBestFit(wei):
     import matplotlib.pyplot as plt
-    #weights = wei.getA()
+    # weights = wei.getA()
     weights = wei
     dataMat, labelMat = loadDataSet()
     dataArr = array(dataMat)
@@ -96,9 +96,9 @@ def stocGradAscent0(dataMatrix, classLabels):
 # 改进的随机梯度上升算法
 def stocGradAscent1(dataMatrix, classLabels, numIter=150):
     m, n = shape(dataMatrix)
-    weights = ones((1,n))
+    weights = ones((1, n))
     weights = mat(weights)
-    #weights = weights.T
+    # weights = weights.T
     for j in range(numIter):
         dataIndex = range(m)
         for i in range(m):
@@ -110,51 +110,103 @@ def stocGradAscent1(dataMatrix, classLabels, numIter=150):
             del (dataIndex[randIndex])
     return weights
 
+
 def store(input, fileName):
-    fw = open(fileName,'w')
-    pickle.dump(input,fw)
+    fw = open(fileName, 'w')
+    pickle.dump(input, fw)
     fw.close()
+
 
 def grab(filename):
     fr = open(filename)
     return pickle.load(fr)
 
+
 def trainFuc(trainFile, numIter, storeFile):
     dataSet, labelSet = loadDataSet(trainFile)
     weights = stocGradAscent1(mat(dataSet), labelSet, numIter)
+    storeFile = '' + str(numIter) + '/' + storeFile
     store(weights, storeFile)
-    #errorRate = classify(dataSet, labelSet, weights)
-    #print errorRate
+
+    print 'complete: ',storeFile
+
+    # errorRate = classify(dataSet, labelSet, weights)
+    # print errorRate
     return
 
-def testFuc(testFile, storeFile):
+
+def testFuc(testFile, numIter ,storeFile):
+    storeFile = str(numIter) + '/' + storeFile
     weights = grab(storeFile)
     dataSet, labelSet = loadDataSet(testFile)
-    errorRate = classify(dataSet,  labelSet, weights)
-    print errorRate
+    allNum, errorNum, fnCount, tpCount = classify(dataSet, labelSet, weights)
+    print '共测试 %d 条数据， 一共错误 %d 条数据， 错误率为 %f, 误判率为 %f' \
+          %(allNum, errorNum, (errorNum/float(allNum)), (fnCount / float(tpCount + fnCount)))
     return
+
 
 def classify(dataSet, labelSet, weights):
     errorNum = 0
+    allNum = len(dataSet)
+    fnCount = 0
+    tpCount = 0
     for i in range(len(dataSet)):
         lineMat = mat(dataSet[i])
         temp = sum(multiply(lineMat, weights))
         result = sigmoid(temp)
-        if(result > 0.5):
+        if (result > 0.5):
             result = 1
         else:
             result = 0
         if result != labelSet[i]:
             errorNum += 1
-    errorRate = float(errorNum)/len(dataSet)
-    return errorRate
+            if labelSet[i] == 0:
+                fnCount += 1
+        else:
+            if labelSet[i] == 0:
+                tpCount += 1
+    return allNum, errorNum, fnCount, tpCount
 
-def mainFuc(trainFile, numIter, storeFile):
-    testFuc(trainFile, storeFile)
-    #trainFuc(trainFile, numIter, storeFile)
+
+def mainFuc(numIter):
+    # testFuc(testFile, storeFile)
+
+    testFuc('test_500_1.txt', numIter, 'train_500_1.txt')
+    testFuc('test_500_2.txt', numIter, 'train_500_2.txt')
+    testFuc('test_500_3.txt', numIter, 'train_500_3.txt')
+    testFuc('test_500_4.txt', numIter, 'train_500_4.txt')
+    testFuc('test_1000_1.txt', numIter, 'train_1000_1.txt')
+    testFuc('test_1000_2.txt', numIter, 'train_1000_2.txt')
+    testFuc('test_1000_3.txt', numIter, 'train_1000_3.txt')
+    testFuc('test_1000_4.txt', numIter, 'train_1000_4.txt')
+    testFuc('test_2000_1.txt', numIter, 'train_2000_1.txt')
+    testFuc('test_2000_2.txt', numIter, 'train_2000_2.txt')
+    testFuc('test_2000_3.txt', numIter, 'train_2000_3.txt')
+    testFuc('test_2000_4.txt', numIter, 'train_2000_4.txt')
+    testFuc('test_3000_1.txt', numIter, 'train_3000_1.txt')
+    testFuc('test_3000_2.txt', numIter, 'train_3000_2.txt')
+    testFuc('test_3000_3.txt', numIter, 'train_3000_3.txt')
+    testFuc('test_3000_4.txt', numIter, 'train_3000_4.txt')
     return
 
-#mainFuc('train_50.txt', 50, 'weights_50.txt')
-mainFuc('test_500.txt', 50, 'weights_50.txt')
+'''
+    trainFuc('train_500_1.txt', numIter, 'train_500_1.txt')
+    trainFuc('train_500_2.txt', numIter, 'train_500_2.txt')
+    trainFuc('train_500_3.txt', numIter, 'train_500_3.txt')
+    trainFuc('train_500_4.txt', numIter, 'train_500_4.txt')
+    trainFuc('train_1000_1.txt', numIter, 'train_1000_1.txt')
+    trainFuc('train_1000_2.txt', numIter, 'train_1000_2.txt')
+    trainFuc('train_1000_3.txt', numIter, 'train_1000_3.txt')
+    trainFuc('train_1000_4.txt', numIter, 'train_1000_4.txt')
+    trainFuc('train_2000_1.txt', numIter, 'train_2000_1.txt')
+    trainFuc('train_2000_2.txt', numIter, 'train_2000_2.txt')
+    trainFuc('train_2000_3.txt', numIter, 'train_2000_3.txt')
+    trainFuc('train_2000_4.txt', numIter, 'train_2000_4.txt')
+    trainFuc('train_3000_1.txt', numIter, 'train_3000_1.txt')
+    trainFuc('train_3000_2.txt', numIter, 'train_3000_2.txt')
+    trainFuc('train_3000_3.txt', numIter, 'train_3000_3.txt')
+    trainFuc('train_3000_4.txt', numIter, 'train_3000_4.txt')
+'''
 
 
+mainFuc(1000)
