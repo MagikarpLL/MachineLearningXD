@@ -74,7 +74,7 @@ def chooseBestFeatureToSplit(dataSet,classLabels,D):
 
 def createTree(trainData, classLabels ,featName, depth ,D):
 
-    print 'createTree'
+    #print 'createTree'
 
     #当类别完全相同时，停止继续划分
     tempSet = set(classLabels)
@@ -122,6 +122,9 @@ def classify(inputTree, featLabels, testVec):
     firstStr = keyList[0]
     secondDict = inputTree[firstStr]
     featIndex = featLabels.index(firstStr)
+
+    classLabel = 1
+
     for key in secondDict.keys():
         if testVec[featIndex] == key:
             if type(secondDict[key]).__name__ == 'dict':
@@ -158,11 +161,11 @@ def adaBoostTrainDT(trainData, classLabels, featName,depth, numIt=40):
         alpha = float(0.5 * log((1.0 - error) / max(error, 1e-16)))
         decTree['alpha'] = alpha
         weakClassArr.append(decTree)
-        print i
+        print 'depth: ' + str(depth) + '—num:' + str(numIt) + '第' + str(i) +'个完成'
         print "classEst:", classEst
         # 为下一次迭代计算D
         # 此处的multiply为对应元素相乘
-        expon = multiply(-1 * alpha * mat(classLabels).T, classEst)
+        expon = multiply(-1 * alpha * mat(classLabels), classEst)
         # exp(x)返回x的指数
         D = multiply(D, exp(expon))
         D = D / D.sum()
@@ -204,6 +207,9 @@ def grabTree(filename):
 def trainAda(dataFile,storeFile, depth, num):
     trainData, trainLabel = getDataAndLabel(dataFile)
     featName = getFeatureName()
+
+    storeFile = 'depth_' + str(depth) + '/' + storeFile
+
     weakClassArr = adaBoostTrainDT(trainData, trainLabel, featName, depth ,num)
     storeTree(weakClassArr, storeFile)
     return 0
@@ -217,22 +223,85 @@ def classifySelf(inputTree, featLabels, testVec):
     else:
         return -1
 
-def testAda(storeFile, testFile):
-    tree = grabTree(storeFile)
+def testAda(treeFile, testFile, depth):
+    treeFile = 'depth_' + str(depth) + '/' + treeFile
+    tree = grabTree(treeFile)
     testData, testLabel = getDataAndLabel(testFile)
     featName = getFeatureName()
+
     errorNum = 0
+    allNum = len(testData)
+    fnNum = 0
+    tpNum = 0
+
     for i in range(len(testData)):
         classRet = classifySelf(tree, featName, testData[i])
         if classRet != testLabel[i]:
             errorNum += 1
-    print errorNum/float(len(testData))
+            if(testLabel[i] == -1):
+                fnNum += 1
+        else:
+            if(testLabel[i] == -1):
+                tpNum += 1
+    print treeFile + '|||||' + '错误率为: %f, 误判率为: %f' %(float(errorNum)/allNum, fnNum/float(fnNum + tpNum))
+
+def trainAllFuc(depth):
+    trainAda('train_3000_1.txt','ada_3000_10_1.txt', depth, 10)
+    trainAda('train_3000_2.txt','ada_3000_10_2.txt', depth, 10)
+    trainAda('train_3000_3.txt','ada_3000_10_3.txt', depth, 10)
+    trainAda('train_3000_4.txt','ada_3000_10_4.txt', depth, 10)
+
+    trainAda('train_3000_1.txt','ada_3000_30_1.txt', depth, 30)
+    trainAda('train_3000_2.txt','ada_3000_30_2.txt', depth, 30)
+    trainAda('train_3000_3.txt','ada_3000_30_3.txt', depth, 30)
+    trainAda('train_3000_4.txt','ada_3000_30_4.txt', depth, 30)
+
+    trainAda('train_3000_1.txt','ada_3000_60_1.txt', depth, 60)
+    trainAda('train_3000_2.txt','ada_3000_60_2.txt', depth, 60)
+    trainAda('train_3000_3.txt','ada_3000_60_3.txt', depth, 60)
+    trainAda('train_3000_4.txt','ada_3000_60_4.txt', depth, 60)
+
+    #trainAda('train_3000_1.txt','ada_3000_120_1.txt', depth, 120)
+    #trainAda('train_3000_2.txt','ada_3000_120_2.txt', depth, 120)
+    #trainAda('train_3000_3.txt','ada_3000_120_3.txt', depth, 120)
+    #trainAda('train_3000_4.txt','ada_3000_120_4.txt', depth, 120)
+
+    return
+
+def testAllFuc(depth):
+    testAda('ada_3000_10_1.txt','test_3000_1.txt', depth)
+    #testAda('ada_3000_10_2.txt','test_3000_2.txt', depth)
+    #testAda('ada_3000_10_3.txt','test_3000_3.txt', depth)
+    #testAda('ada_3000_10_4.txt','test_3000_4.txt', depth)
+
+    testAda('ada_3000_30_1.txt','test_3000_1.txt', depth)
+   # testAda('ada_3000_30_2.txt','test_3000_2.txt', depth)
+    #testAda('ada_3000_30_3.txt','test_3000_3.txt', depth)
+    #testAda('ada_3000_30_4.txt','test_3000_4.txt', depth)
+
+    testAda('ada_3000_60_1.txt','test_3000_1.txt', depth)
+    #testAda('ada_3000_60_2.txt','test_3000_2.txt', depth)
+   # testAda('ada_3000_60_3.txt','test_3000_3.txt', depth)
+   # testAda('ada_3000_60_4.txt','test_3000_4.txt', depth)
+
+    #trainAda('train_3000_1.txt','ada_3000_120_1.txt', depth, 120)
+    #trainAda('train_3000_2.txt','ada_3000_120_2.txt', depth, 120)
+    #trainAda('train_3000_3.txt','ada_3000_120_3.txt', depth, 120)
+    #trainAda('train_3000_4.txt','ada_3000_120_4.txt', depth, 120)
+
+    return
 
 def mainFunc():
     #训练分类器
-    #trainAda('train_1000.txt','ada_test_1000.txt', 4, 80)
+    trainAda('train_500_1.txt','test.txt', 3, 10)
+    #trainAllFuc(3)
+
+    #trainAllFuc(5)
+
+    #testAllFuc(3)
+
     #测试决策树准确率
-    testAda('ada_test_1000.txt','test_2000.txt')
+    #testAda('ada_test_1000.txt','test_2000.txt')
 
     return 0
 

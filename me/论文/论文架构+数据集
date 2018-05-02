@@ -57,6 +57,12 @@ test train
 2000
 
 
+
+
+
+
+
+
 二.
 实现Adaboost+KNN,Adaboost+决策树，随机森林+决策树
 三.跑数据
