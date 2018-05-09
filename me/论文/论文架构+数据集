@@ -57,51 +57,38 @@ test train
 2000
 
 
+[1] 电商生态安全联盟.电子商务生态安全白皮书[EB/OL].https://www.saee.org.cn/pc/newsContent/news20170726，2017.
+[2] pwn.2017网络钓鱼趋势和情报报告[EB/OL].https://www.anquanke.com/post/id/85562，2017-02-25.
+[3] 国家互联网应急中心.2017年我国互联网网络安全态势综述[EB/OL].http://www.cert.org.cn/publish/main/upload/File/situation.pdf，2017.
+[4] 彭寅. 基于文本特征分析的钓鱼邮件检测技术研究[D]. 南京邮电大学, 2012.
+[5] 周澔宇. 基于URL的网页内容过滤器的设计与实现[J]. 计算机工程, 2006, 32(7):81-83.
+[6] Tetraph.Covert Redirect[EB/OL].http://tetraph.com/covert_redirect/ ，2014-05.
+[7] Yahoo.Facebook, Google Users Threatened by New Security Flaw[EB/OL].https://www.yahoo.com/news/facebook-google-users-threatened-security-192547549.html，2014-11.
+[8] 中国反钓鱼网站联盟[OL].http://www.apac.org.cn/lmgk/. 
+[9] PhishTank[OL].https://www.phishtank.com/.
+[10] Garera S, Provos N, Chew M, et al. A framework for detection and measurement of phishing attacks[C]// ACM Workshop on Recurring Malcode. ACM, 2007:1-8.
+[11] 黄华军, 王耀钧, 姜丽清. 网络钓鱼防御技术研究[J]. 信息网络安全, 2012(4):30-35.
+[12] Ma J, Saul L K, Savage S, et al. Beyond blacklists:learning to detect malicious web sites from suspicious URLs[C]// ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, Paris, France, June 28 - July. DBLP, 2009:1245-1254.
+[13] 吕芳. 基于视觉特征的钓鱼网页相似性计算技术研究[D]. 哈尔滨工业大学, 2015.
+[14] 黄华军, 钱亮, 王耀钧. 基于异常特征的钓鱼网站URL检测技术[J]. 信息网络安全, 2012(1):23-25.
+[15] 张晓春. 基于异常特征检测的恶意网页识别技术研究[D]. 武汉理工大学, 2012.
+[16] Page L. The PageRank Citation Ranking : Bringing Order to the Web[C]// Proc. of the WWW Conference. 1998:1-14.
+[17] Kotsiantis S B, Kanellopoulos D, Pintelas P E. Data Preprocessing for Supervised Learning[J]. Enformatika, 2006, 1(1):111-117.
+[18] Peterson L. K-nearest neighbor[J]. Scholarpedia, 2009, 4(2).
+[19] 王济川, 郭志刚. Logistic回归模型:方法与应用[M]. 高等教育出版社, 2001.
+[20] Collins M, Schapire R E, Singer Y. Logistic Regression, AdaBoost and Bregman Distances[J]. Machine Learning, 2002, 48(1-3):253-285.
+[21] HARRIS DRUCKER, ROBERT SCHAPIRE, PATRICE SIMARD. BOOSTING PERFORMANCE IN NEURAL NETWORKS[J]. International Journal of Pattern Recognition & Artificial Intelligence, 1993, 07(04):-.
+[22] Breiman L I, Friedman J H, Olshen R A, et al. Classification and Regression Trees (CART)[J]. Encyclopedia of Ecology, 1984, 40(3):582-588.
+[23] Breiman L. Random Forests[J]. Machine Learning, 2001, 45(1):5-32.
+[24] Abney S. Bootstrapping[J]. Proceedings of Annual Meeting of the Association for Computational Linguistics, 2002:360--367.
+[25] Landgrebe D. A survey of decision tree classifier methodology[J]. IEEE Transactions on Systems Man & Cybernetics, 2002, 21(3):660-674.
+[26] 庄进发, 罗键, 彭彦卿,等. 基于改进随机森林的故障诊断方法研究[J]. 计算机集成制造系统, 2009, 15(4):777-785.
+[27]  POLITIS D N , ROMAMO J P , WOLF M. Subsampling[ M].New York , N. Y. , USA:Springer , 1999.
+[28] Friedman J H, Hall P. On bagging and nonlinear estimation[J]. Journal of Statistical Planning & Inference, 1999, 137(3):669-683.
 
 
 
 
-
-
-二.
-实现Adaboost+KNN,Adaboost+决策树，随机森林+决策树
-三.跑数据
-
-[1]  http://news.163.com/17/0727/23/CQD0JBJ2000187VE.html
-[2]   https://www.anquanke.com/post/id/85562
-[3]  http://www.cert.org.cn/publish/main/46/2018/20180425155824451408914/20180425155824451408914_.html
-[4]	基于文本特征分析的钓鱼邮件检测技术研究.caj
-[5] https://news.netcraft.com/archives/2005/05/12/fraudsters_seek_to_make_phishing_sites_undetectable_by_content_filters.html
-[6] https://www.webcitation.org/5w9Z2iACi?url=http://www.fraudwatchinternational.com/phishing-fraud/phishing-web-site-methods/
-[7] http://tetraph.com/covert_redirect/       Covert Redirect. Tetraph. 1 May 2014 [10 November 2014].
-[8] https://www.yahoo.com/news/facebook-google-users-threatened-security-192547549.html       Facebook, Google Users Threatened by New Security Flaw. Yahoo. 2 May 2014 [10 November 2014].
-[9] http://www.apac.cn/
-[10] https://www.phishtank.com/
-[11] Sujata G arera, N iels Provos, M onica C hew , et al. A Fram ew ork for
-D etection and M easurem ent of Phishing A ttacks [A ]. In: C hristopher
-Kruegel, ed [C ]. Proc. of the W O R M ’07. U SA: AC M Press, 2007, 1-8.
-[12] 网络钓鱼防御技术研究_黄华军
-[13]
-J.  Ma,  S.  L.  K.,  S.  Stefan,  and  V.  G.  M.,  “Beyond  blacklists:  learning  to  detect  malicious  web 
-sites from suspicious urls,” in Proceedings of the 15
-th
- international conference on Knowledge 
-discovery and data mining, 2009, pp. 1245-1254. 
-
-[14]  S. Kotsiantis, D. Kanellopoulos, P. Pintelas, "Data Preprocessing for Supervised Learning", International Journal of Computer Science, 2006, Vol 1 N. 2, pp 111–117.
-
-[15] 　 BREIMAN L. Random forests[J ]. Machine Learning , 2001 ,
-45(1) :5 2 32.
-
-[16] 基于改进随机森林的故障诊断方法研究   庄进发 , 罗 　键 , 彭彦卿 , 黄春庆 , 吴长庆
-
-[17]  POLITIS D N , ROMAMO J P , WOLF M. Subsampling[ M].
-New York , N. Y. , USA:Springer , 1999.
-
-[18]  FRIEDMAN J H , HALL P. On bagging and nonlinear esti 2
-mation [J ]. Journal of Statistical Planning and Inference ,
-2007 , 137(3) :669 2 683.
- 
 
 
 

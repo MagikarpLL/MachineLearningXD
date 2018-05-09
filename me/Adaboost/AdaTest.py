@@ -208,7 +208,7 @@ def trainAda(dataFile,storeFile, depth, num):
     trainData, trainLabel = getDataAndLabel(dataFile)
     featName = getFeatureName()
 
-    storeFile = 'depth_' + str(depth) + '/' + storeFile
+    storeFile = str(depth) + '_' + storeFile
 
     weakClassArr = adaBoostTrainDT(trainData, trainLabel, featName, depth ,num)
     storeTree(weakClassArr, storeFile)
@@ -224,7 +224,7 @@ def classifySelf(inputTree, featLabels, testVec):
         return -1
 
 def testAda(treeFile, testFile, depth):
-    treeFile = 'depth_' + str(depth) + '/' + treeFile
+    treeFile = treeFile
     tree = grabTree(treeFile)
     testData, testLabel = getDataAndLabel(testFile)
     featName = getFeatureName()
@@ -246,20 +246,20 @@ def testAda(treeFile, testFile, depth):
     print treeFile + '|||||' + '错误率为: %f, 误判率为: %f' %(float(errorNum)/allNum, fnNum/float(fnNum + tpNum))
 
 def trainAllFuc(depth):
-    trainAda('train_3000_1.txt','ada_3000_10_1.txt', depth, 10)
-    trainAda('train_3000_2.txt','ada_3000_10_2.txt', depth, 10)
-    trainAda('train_3000_3.txt','ada_3000_10_3.txt', depth, 10)
-    trainAda('train_3000_4.txt','ada_3000_10_4.txt', depth, 10)
+    trainAda('train_3000_1.txt','ada_3000_30_1.txt', 3, 1)
+    trainAda('train_3000_2.txt','ada_3000_30_2.txt', 5, 1)
+    trainAda('train_3000_3.txt','ada_3000_30_3.txt', 8, 1)
+    trainAda('train_3000_4.txt','ada_3000_30_4.txt', 10, 1)
 
-    trainAda('train_3000_1.txt','ada_3000_30_1.txt', depth, 30)
-    trainAda('train_3000_2.txt','ada_3000_30_2.txt', depth, 30)
-    trainAda('train_3000_3.txt','ada_3000_30_3.txt', depth, 30)
-    trainAda('train_3000_4.txt','ada_3000_30_4.txt', depth, 30)
-
-    trainAda('train_3000_1.txt','ada_3000_60_1.txt', depth, 60)
-    trainAda('train_3000_2.txt','ada_3000_60_2.txt', depth, 60)
-    trainAda('train_3000_3.txt','ada_3000_60_3.txt', depth, 60)
-    trainAda('train_3000_4.txt','ada_3000_60_4.txt', depth, 60)
+    # trainAda('train_3000_1.txt','ada_3000_30_1.txt', depth, 30)
+    # trainAda('train_3000_2.txt','ada_3000_30_2.txt', depth, 30)
+    # trainAda('train_3000_3.txt','ada_3000_30_3.txt', depth, 30)
+    # trainAda('train_3000_4.txt','ada_3000_30_4.txt', depth, 30)
+    #
+    # trainAda('train_3000_1.txt','ada_3000_60_1.txt', depth, 60)
+    # trainAda('train_3000_2.txt','ada_3000_60_2.txt', depth, 60)
+    # trainAda('train_3000_3.txt','ada_3000_60_3.txt', depth, 60)
+    # trainAda('train_3000_4.txt','ada_3000_60_4.txt', depth, 60)
 
     #trainAda('train_3000_1.txt','ada_3000_120_1.txt', depth, 120)
     #trainAda('train_3000_2.txt','ada_3000_120_2.txt', depth, 120)
@@ -269,17 +269,22 @@ def trainAllFuc(depth):
     return
 
 def testAllFuc(depth):
-    testAda('ada_3000_10_1.txt','test_3000_1.txt', depth)
+    testAda('3_ada_3000_30_1.txt','test_3000_1.txt', 3)
+    testAda('5_ada_3000_30_2.txt','test_3000_2.txt', 5)
+    testAda('8_ada_3000_30_3.txt','test_3000_3.txt', 8)
+    testAda('10_ada_3000_30_4.txt','test_3000_4.txt', 10)
+
+    #testAda('ada_3000_10_1.txt','test_3000_1.txt', depth)
     #testAda('ada_3000_10_2.txt','test_3000_2.txt', depth)
     #testAda('ada_3000_10_3.txt','test_3000_3.txt', depth)
     #testAda('ada_3000_10_4.txt','test_3000_4.txt', depth)
 
-    testAda('ada_3000_30_1.txt','test_3000_1.txt', depth)
+    #testAda('ada_3000_30_1.txt','test_3000_1.txt', depth)
    # testAda('ada_3000_30_2.txt','test_3000_2.txt', depth)
     #testAda('ada_3000_30_3.txt','test_3000_3.txt', depth)
     #testAda('ada_3000_30_4.txt','test_3000_4.txt', depth)
 
-    testAda('ada_3000_60_1.txt','test_3000_1.txt', depth)
+    #testAda('ada_3000_60_1.txt','test_3000_1.txt', depth)
     #testAda('ada_3000_60_2.txt','test_3000_2.txt', depth)
    # testAda('ada_3000_60_3.txt','test_3000_3.txt', depth)
    # testAda('ada_3000_60_4.txt','test_3000_4.txt', depth)
@@ -293,12 +298,12 @@ def testAllFuc(depth):
 
 def mainFunc():
     #训练分类器
-    trainAda('train_500_1.txt','test.txt', 3, 10)
+    #trainAda('train_500_1.txt','test.txt', 3, 10)
     #trainAllFuc(3)
 
     #trainAllFuc(5)
 
-    #testAllFuc(3)
+    testAllFuc(3)
 
     #测试决策树准确率
     #testAda('ada_test_1000.txt','test_2000.txt')

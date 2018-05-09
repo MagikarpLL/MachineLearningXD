@@ -2,7 +2,7 @@
 # coding: utf-8
 import sys
 
-sys.path.append(r"/home/magikarpll/me/workplace/pycharm/MachineLearningXD/me/tool/")
+sys.path.append(r"I:/Workplace/WorkPlace/PyCharm/MachineLearningXD/me/tool/")
 import Data
 from random import seed
 from random import randrange
@@ -200,14 +200,32 @@ def bagging_predict(trees, row):
 # Random Forest Algorithm
 def random_forest(train, max_depth, min_size, sample_size, n_trees, n_features):
     trees = list()
+    trainSet = set([tuple(t) for t in train])
+    sampleList = []
     for i in range(n_trees):
         sample = subsample(train, sample_size)
         tree = build_tree(sample, max_depth, min_size, n_features)
+
+
+        sampleSet = set([tuple(t) for t in sample])
+        testTuple = list(trainSet - sampleSet)
+        testList = [list(t) for t in testTuple]
+        classLabels = [row[-1] for row in testList]
+        for j in range(len(testList)):
+            testList[j][-1] = None
+        predictions = [predict(tree, row) for row in testList]
+        errorNum = 0
+        for n in range(len(classLabels)):
+            if (classLabels[n] != predictions[n]):
+                errorNum += 1
+        alpha = errorNum/float(len(classLabels))
+
+        tree['alpha'] = 1 - alpha
+
         trees.append(tree)
         print '第' + str(i) + '颗完成'
 
-    # predictions = [bagging_predict(trees, row) for row in test]
-    # return (predictions), trees
+
     return trees
 
 
@@ -233,7 +251,7 @@ def trainForest(trainFile, storeFile, max_depth, n_trees):
     sample_size = 0.5
     n_features = int(sqrt(len(dataset[0]) - 1))
 
-    storeFile = str(max_depth) + '/' + storeFile
+    storeFile = str(max_depth) + 'test' + '/' + storeFile
 
     time_start = time.time()
 
@@ -244,6 +262,17 @@ def trainForest(trainFile, storeFile, max_depth, n_trees):
 
     print 'depth_' + str(max_depth) + '_num_' + str(n_trees) + '_complete'
     storeTree(trees, storeFile)
+
+
+# Make a prediction with a list of bagged trees
+def bagging_predict2(trees, row):
+    result = 0.0
+    for i in range(len(trees)):
+        result = result + trees[i]['alpha'] * predict(trees[i], row)
+    if result >= 0:
+        return 1
+    else:
+        return -1
 
 
 def testForest(treeFile, testFile):
@@ -258,7 +287,7 @@ def testForest(treeFile, testFile):
 
     for i in range(len(dataSet)):
         dataSet[i][-1] = None
-    predictions = [bagging_predict(trees, row) for row in dataSet]
+    predictions = [bagging_predict2(trees, row) for row in dataSet]
 
     for i in range(allNum):
         if (classLabels[i] != predictions[i]):
@@ -274,11 +303,10 @@ def testForest(treeFile, testFile):
 
 
 def trainAllFun(depth):
-    if (depth != 3):
-        trainForest('train_3000_1.txt', 'forest_10_3000_1.txt', depth, 10)
-        trainForest('train_3000_2.txt', 'forest_10_3000_2.txt', depth, 10)
-        trainForest('train_3000_3.txt', 'forest_10_3000_3.txt', depth, 10)
-        trainForest('train_3000_4.txt', 'forest_10_3000_4.txt', depth, 10)
+    trainForest('train_3000_1.txt', 'forest_10_3000_1.txt', depth, 10)
+    trainForest('train_3000_2.txt', 'forest_10_3000_2.txt', depth, 10)
+    trainForest('train_3000_3.txt', 'forest_10_3000_3.txt', depth, 10)
+    trainForest('train_3000_4.txt', 'forest_10_3000_4.txt', depth, 10)
 
     trainForest('train_3000_1.txt', 'forest_30_3000_1.txt', depth, 30)
     trainForest('train_3000_2.txt', 'forest_30_3000_2.txt', depth, 30)
@@ -297,20 +325,20 @@ def trainAllFun(depth):
     return
 
 def testAllFuc(depth):
-    testForest(str(depth) + '/forest_10_3000_1.txt', 'test_3000_1.txt')
-    testForest(str(depth) + '/forest_10_3000_2.txt', 'test_3000_2.txt')
-    testForest(str(depth) + '/forest_10_3000_3.txt', 'test_3000_3.txt')
-    testForest(str(depth) + '/forest_10_3000_4.txt', 'test_3000_4.txt')
+    testForest(str(depth) + 'test/forest_10_3000_1.txt', 'test_3000_1.txt')
+    testForest(str(depth) + 'test/forest_10_3000_2.txt', 'test_3000_2.txt')
+    testForest(str(depth) + 'test/forest_10_3000_3.txt', 'test_3000_3.txt')
+    testForest(str(depth) + 'test/forest_10_3000_4.txt', 'test_3000_4.txt')
 
-    testForest(str(depth) + '/forest_30_3000_1.txt', 'test_3000_1.txt')
-    testForest(str(depth) + '/forest_30_3000_2.txt', 'test_3000_2.txt')
-    testForest(str(depth) + '/forest_30_3000_3.txt', 'test_3000_3.txt')
-    testForest(str(depth) + '/forest_30_3000_4.txt', 'test_3000_4.txt')
+    testForest(str(depth) + 'test/forest_30_3000_1.txt', 'test_3000_1.txt')
+    testForest(str(depth) + 'test/forest_30_3000_2.txt', 'test_3000_2.txt')
+    testForest(str(depth) + 'test/forest_30_3000_3.txt', 'test_3000_3.txt')
+    testForest(str(depth) + 'test/forest_30_3000_4.txt', 'test_3000_4.txt')
 
-    testForest(str(depth) + '/forest_60_3000_1.txt', 'test_3000_1.txt')
-    testForest(str(depth) + '/forest_60_3000_2.txt', 'test_3000_2.txt')
-    testForest(str(depth) + '/forest_60_3000_3.txt', 'test_3000_3.txt')
-    testForest(str(depth) + '/forest_60_3000_4.txt', 'test_3000_4.txt')
+    testForest(str(depth) + 'test/forest_60_3000_1.txt', 'test_3000_1.txt')
+    testForest(str(depth) + 'test/forest_60_3000_2.txt', 'test_3000_2.txt')
+    testForest(str(depth) + 'test/forest_60_3000_3.txt', 'test_3000_3.txt')
+    testForest(str(depth) + 'test/forest_60_3000_4.txt', 'test_3000_4.txt')
 
     #testForest(str(depth) + '/forest_120_3000_1.txt', 'test_3000_1.txt')
     #testForest(str(depth) + '/forest_120_3000_2.txt', 'test_3000_2.txt')
@@ -319,14 +347,15 @@ def testAllFuc(depth):
     return
 
 def RandomForestMain():
-    # trainAdaCart('train_500_1.txt', 'test.txts' , 3, 10)
+    #trainForest('train_3000_2.txt', 'test.txt' , 5, 60)
+    #testForest('3/test.txt', 'test_3000_1.txt')
 
-    #testAllFuc(6)
-    #testAllFuc(8)
+    testAllFuc(20)
+    #testAllFuc(10)
 
-    #trainAllFun(6)
+    #trainAllFun(30)
     #trainAllFun(8)
-    trainAllFun(10)
+    #trainAllFun(10)
     # trainAllFun(10)
     return
 
