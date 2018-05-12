@@ -1,9 +1,6 @@
 # Random Forest Algorithm on Sonar Dataset
 # coding: utf-8
-import sys
-
-sys.path.append(r"I:/Workplace/WorkPlace/PyCharm/MachineLearningXD/me/tool/")
-import Data
+from me.tool import Data
 from random import seed
 from random import randrange
 from math import sqrt

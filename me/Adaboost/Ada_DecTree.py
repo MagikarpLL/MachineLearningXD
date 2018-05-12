@@ -1,8 +1,5 @@
 # coding: utf-8
-import sys
-
-sys.path.append(r"I:\Workplace\WorkPlace\PyCharm\MachineLearningXD\me\tool")
-import Data
+from me.tool import Data
 from numpy import *
 import operator
 from math import log
@@ -11,6 +8,8 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.datasets import make_gaussian_quantiles
 
+
+#暂时无用
 #多数投票决定该节点类型
 def majorityCnt(classList):
     classCount = {}

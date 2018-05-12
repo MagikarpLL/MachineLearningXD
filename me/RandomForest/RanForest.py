@@ -1,9 +1,6 @@
 # Random Forest Algorithm on Sonar Dataset
 # coding: utf-8
-import sys
-
-sys.path.append(r"/home/magikarpll/me/workplace/pycharm/MachineLearningXD/me/tool/")
-import Data
+from me.tool import Data
 from random import seed
 from random import randrange
 from math import sqrt
@@ -230,7 +227,7 @@ def trainForest(trainFile, storeFile, max_depth, n_trees):
     # evaluate algorithm
     n_folds = 5
     min_size = 1
-    sample_size = 0.5
+    sample_size = 0.8
     n_features = int(sqrt(len(dataset[0]) - 1))
 
     storeFile = str(max_depth) + '/' + storeFile
@@ -274,18 +271,18 @@ def testForest(treeFile, testFile):
 
 
 def trainAllFun(depth):
-    if (depth != 3):
-        trainForest('train_3000_1.txt', 'forest_10_3000_1.txt', depth, 10)
-        trainForest('train_3000_2.txt', 'forest_10_3000_2.txt', depth, 10)
-        trainForest('train_3000_3.txt', 'forest_10_3000_3.txt', depth, 10)
-        trainForest('train_3000_4.txt', 'forest_10_3000_4.txt', depth, 10)
 
-    trainForest('train_3000_1.txt', 'forest_30_3000_1.txt', depth, 30)
-    trainForest('train_3000_2.txt', 'forest_30_3000_2.txt', depth, 30)
-    trainForest('train_3000_3.txt', 'forest_30_3000_3.txt', depth, 30)
-    trainForest('train_3000_4.txt', 'forest_30_3000_4.txt', depth, 30)
-
-    trainForest('train_3000_1.txt', 'forest_60_3000_1.txt', depth, 60)
+    # trainForest('train_3000_1.txt', 'forest_10_3000_1.txt', depth, 10)
+    # trainForest('train_3000_2.txt', 'forest_10_3000_2.txt', depth, 10)
+    # trainForest('train_3000_3.txt', 'forest_10_3000_3.txt', depth, 10)
+    # trainForest('train_3000_4.txt', 'forest_10_3000_4.txt', depth, 10)
+    #
+    # trainForest('train_3000_1.txt', 'forest_30_3000_1.txt', depth, 30)
+    # trainForest('train_3000_2.txt', 'forest_30_3000_2.txt', depth, 30)
+    # trainForest('train_3000_3.txt', 'forest_30_3000_3.txt', depth, 30)
+    # trainForest('train_3000_4.txt', 'forest_30_3000_4.txt', depth, 30)
+    #
+    # trainForest('train_3000_1.txt', 'forest_60_3000_1.txt', depth, 60)
     trainForest('train_3000_2.txt', 'forest_60_3000_2.txt', depth, 60)
     trainForest('train_3000_3.txt', 'forest_60_3000_3.txt', depth, 60)
     trainForest('train_3000_4.txt', 'forest_60_3000_4.txt', depth, 60)
@@ -297,17 +294,17 @@ def trainAllFun(depth):
     return
 
 def testAllFuc(depth):
-    testForest(str(depth) + '/forest_10_3000_1.txt', 'test_3000_1.txt')
-    testForest(str(depth) + '/forest_10_3000_2.txt', 'test_3000_2.txt')
-    testForest(str(depth) + '/forest_10_3000_3.txt', 'test_3000_3.txt')
-    testForest(str(depth) + '/forest_10_3000_4.txt', 'test_3000_4.txt')
-
-    testForest(str(depth) + '/forest_30_3000_1.txt', 'test_3000_1.txt')
-    testForest(str(depth) + '/forest_30_3000_2.txt', 'test_3000_2.txt')
-    testForest(str(depth) + '/forest_30_3000_3.txt', 'test_3000_3.txt')
-    testForest(str(depth) + '/forest_30_3000_4.txt', 'test_3000_4.txt')
-
-    testForest(str(depth) + '/forest_60_3000_1.txt', 'test_3000_1.txt')
+    # testForest(str(depth) + '/forest_10_3000_1.txt', 'test_3000_1.txt')
+    # testForest(str(depth) + '/forest_10_3000_2.txt', 'test_3000_2.txt')
+    # testForest(str(depth) + '/forest_10_3000_3.txt', 'test_3000_3.txt')
+    # testForest(str(depth) + '/forest_10_3000_4.txt', 'test_3000_4.txt')
+    #
+    # testForest(str(depth) + '/forest_30_3000_1.txt', 'test_3000_1.txt')
+    # testForest(str(depth) + '/forest_30_3000_2.txt', 'test_3000_2.txt')
+    # testForest(str(depth) + '/forest_30_3000_3.txt', 'test_3000_3.txt')
+    # testForest(str(depth) + '/forest_30_3000_4.txt', 'test_3000_4.txt')
+    #
+    # testForest(str(depth) + '/forest_60_3000_1.txt', 'test_3000_1.txt')
     testForest(str(depth) + '/forest_60_3000_2.txt', 'test_3000_2.txt')
     testForest(str(depth) + '/forest_60_3000_3.txt', 'test_3000_3.txt')
     testForest(str(depth) + '/forest_60_3000_4.txt', 'test_3000_4.txt')
@@ -321,12 +318,12 @@ def testAllFuc(depth):
 def RandomForestMain():
     # trainAdaCart('train_500_1.txt', 'test.txts' , 3, 10)
 
-    #testAllFuc(6)
+    testAllFuc(5)
     #testAllFuc(8)
 
     #trainAllFun(6)
     #trainAllFun(8)
-    trainAllFun(10)
+    #trainAllFun(5)
     # trainAllFun(10)
     return
 

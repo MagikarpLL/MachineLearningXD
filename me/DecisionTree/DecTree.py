@@ -1,8 +1,5 @@
 # coding: utf-8
-import sys
-
-sys.path.append(r"/home/magikarpll/me/workplace/pycharm/MachineLearningXD/me/tool/")
-import Data
+from me.tool import Data
 import numpy as np
 import operator
 from math import log
