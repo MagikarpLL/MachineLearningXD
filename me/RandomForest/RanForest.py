@@ -268,70 +268,36 @@ def testForest(treeFile, testFile):
 
     print treeFile + '||||' + '错误率: %f, 误判率: %f' % (float(errorNum) / allNum, fnNum / float(fnNum + tpNum))
 
-
-
-def trainAllFun(depth):
-
-    # trainForest('train_3000_1.txt', 'forest_10_3000_1.txt', depth, 10)
-    # trainForest('train_3000_2.txt', 'forest_10_3000_2.txt', depth, 10)
-    # trainForest('train_3000_3.txt', 'forest_10_3000_3.txt', depth, 10)
-    # trainForest('train_3000_4.txt', 'forest_10_3000_4.txt', depth, 10)
-    #
-    # trainForest('train_3000_1.txt', 'forest_30_3000_1.txt', depth, 30)
-    # trainForest('train_3000_2.txt', 'forest_30_3000_2.txt', depth, 30)
-    # trainForest('train_3000_3.txt', 'forest_30_3000_3.txt', depth, 30)
-    # trainForest('train_3000_4.txt', 'forest_30_3000_4.txt', depth, 30)
-    #
-    # trainForest('train_3000_1.txt', 'forest_60_3000_1.txt', depth, 60)
-    trainForest('train_3000_2.txt', 'forest_60_3000_2.txt', depth, 60)
-    trainForest('train_3000_3.txt', 'forest_60_3000_3.txt', depth, 60)
-    trainForest('train_3000_4.txt', 'forest_60_3000_4.txt', depth, 60)
-
-    #trainForest('train_3000_1.txt', 'forest_120_3000_1.txt', depth, 120)
-    #trainForest('train_3000_2.txt', 'forest_120_3000_2.txt', depth, 120)
-    #trainForest('train_3000_3.txt', 'forest_120_3000_3.txt', depth, 120)
-    #trainForest('train_3000_4.txt', 'forest_120_3000_4.txt', depth, 120)
-    return
-
-def testAllFuc(depth):
-    # testForest(str(depth) + '/forest_10_3000_1.txt', 'test_3000_1.txt')
-    # testForest(str(depth) + '/forest_10_3000_2.txt', 'test_3000_2.txt')
-    # testForest(str(depth) + '/forest_10_3000_3.txt', 'test_3000_3.txt')
-    # testForest(str(depth) + '/forest_10_3000_4.txt', 'test_3000_4.txt')
-    #
-    # testForest(str(depth) + '/forest_30_3000_1.txt', 'test_3000_1.txt')
-    # testForest(str(depth) + '/forest_30_3000_2.txt', 'test_3000_2.txt')
-    # testForest(str(depth) + '/forest_30_3000_3.txt', 'test_3000_3.txt')
-    # testForest(str(depth) + '/forest_30_3000_4.txt', 'test_3000_4.txt')
-    #
-    # testForest(str(depth) + '/forest_60_3000_1.txt', 'test_3000_1.txt')
-    testForest(str(depth) + '/forest_60_3000_2.txt', 'test_3000_2.txt')
-    testForest(str(depth) + '/forest_60_3000_3.txt', 'test_3000_3.txt')
-    testForest(str(depth) + '/forest_60_3000_4.txt', 'test_3000_4.txt')
-
-    #testForest(str(depth) + '/forest_120_3000_1.txt', 'test_3000_1.txt')
-    #testForest(str(depth) + '/forest_120_3000_2.txt', 'test_3000_2.txt')
-    #testForest(str(depth) + '/forest_120_3000_3.txt', 'test_3000_3.txt')
-    #testForest(str(depth) + '/forest_120_3000_4.txt', 'test_3000_4.txt')
-    return
-
-def RandomForestMain():
-    # trainAdaCart('train_500_1.txt', 'test.txts' , 3, 10)
-
-    testAllFuc(5)
-    #testAllFuc(8)
-
-    #trainAllFun(6)
-    #trainAllFun(8)
-    #trainAllFun(5)
-    # trainAllFun(10)
+def trainAllFuc(numArray, depthArray, algorithmName, trainArray):
+    for depth in depthArray:
+        for num in numArray:
+            for i in [1, 2, 3, 4]:
+                tempStore = str(depth) + '/' + algorithmName + '_' + str(num) + '_3000_' + str(i) + '.txt'
+                trainForest(trainArray[i - 1], tempStore, depth, num)
     return
 
 
-def mainFuc(trainFile, storeFile, treeFile, testFile):
-    # trainForest(trainFile, storeFile)
-    testForest(treeFile, testFile)
+def testAllFuc(numArray, depthArray, algorithmName, testArray):
+    for depth in depthArray:
+        for num in numArray:
+            for i in [1, 2, 3, 4]:
+                tempStore = str(depth) + '/' + algorithmName + '_' + str(num) + '_3000_' + str(i) + '.txt'
+                testForest(tempStore, testArray[i - 1])
+    return
 
 
-# mainFuc('train_500.txt','forest_500.txt', 'forest_500.txt','test_500.txt')
-RandomForestMain()
+def mainFunc():
+    algorithmName = 'forest'
+    trainArray = ['train_3000_1.txt',
+                  'train_3000_2.txt',
+                  'train_3000_3.txt',
+                  'train_3000_4.txt']
+    testArray = ['test_3000_1.txt',
+                 'test_3000_2.txt',
+                 'test_3000_3.txt',
+                 'test_3000_4.txt']
+    #trainAllFuc([10, 30, 60], [3, 5, 8, 10], algorithmName, trainArray)
+    testAllFuc([10, 30, 60], [3, 5], algorithmName, testArray)
+    return 0
+
+mainFunc()
