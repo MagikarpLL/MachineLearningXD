@@ -266,8 +266,8 @@ def mainFunc():
                  'test_3000_2.txt',
                  'test_3000_3.txt',
                  'test_3000_4.txt']
-    #trainAllFuc([10, 30, 60], [3, 5, 8, 10], algorithmName, trainArray)
-    testAllFuc([10, 30, 60], [3, 5], algorithmName, testArray)
+    trainAllFuc([10, 30, 60], [10], algorithmName, trainArray)
+    #testAllFuc([10, 30, 60], [3, 5], algorithmName, testArray)
     return 0
 
 
